@@ -1,29 +1,35 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
-
-interface Todo {
-  description: string;
-}
+import TodoTypes from './Todo'
+import TodoService from './TodoService'
+import TodoList from './Components/TodoList'
 
 function App() {
 
   
   const [todoDescription, setTodoDescription] = useState('')
-  const [todosList, setTodoList] = useState<Todo[]>([])	
+  const [todosList, setTodoList] = useState<TodoTypes[]>([])	
+
+  // Cargar todos existentes
+  useEffect(() => {
+    const savedTodos = TodoService.getTodos()
+    setTodoList(savedTodos)
+  }, [])
 
   const handleChange = (e: any) => {
     setTodoDescription(e.target.value)  
   }
-  
+
+
+  // Agregar nueva tarea
   const handleClick = () => {
-    const tempTodoList = [...todosList]
-    const newTodo = {
-      description: todoDescription
-    }
-    tempTodoList.unshift(newTodo)
-    console.log('tempTodoList', tempTodoList)
-    setTodoList(tempTodoList)
-   }
+    if (todoDescription.trim() === '') return;
+
+    const newTodo = TodoService.addTodo(todoDescription);
+    // Actualizar el estado con la nueva tarea
+    setTodoList((prevTodos) => [newTodo, ...prevTodos]);
+    setTodoDescription('');
+  };
 
   return (
     <>
@@ -39,12 +45,8 @@ function App() {
           />
           <button onClick={handleClick}>Add task</button>
         </div>
-
         <br />
-
-        <div>List of To Do tasks</div>
-        <div>{JSON.stringify(todosList)}</div>
-
+        <TodoList/> 
       </div>
         
     </>
