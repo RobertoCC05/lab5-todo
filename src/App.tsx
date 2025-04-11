@@ -20,7 +20,6 @@ function App() {
     setTodoDescription(e.target.value)  
   }
 
-
   // Agregar nueva tarea
   const handleClick = () => {
     if (todoDescription.trim() === '') return;
@@ -46,7 +45,7 @@ function App() {
           <button onClick={handleClick}>Add task</button>
         </div>
         <br />
-        <TodoList/> 
+        <TodoList todos={todosList} setTodos={setTodoList}/> 
       </div>
         
     </>

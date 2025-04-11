@@ -2,8 +2,7 @@ import {useState} from "react";
 import TodoTypes from "../Todo";
 import TodoService from "../TodoService";
 
-const TodoList = () =>{
-    const [todos,setTodos] = useState<TodoTypes[]>(TodoService.getTodos());
+const TodoList = ({ todos, setTodos }: { todos: TodoTypes[], setTodos: React.Dispatch<React.SetStateAction<TodoTypes[]>> }) =>{
     const [editingTodoId, setEditTodoId] = useState<number | null>(null);
     const [editedTodoDescription, setEditedDescription] = useState<string>("")
 
@@ -36,8 +35,21 @@ const TodoList = () =>{
         const updatedTodos = TodoService.getTodos();
         console.log("Updated todos:", updatedTodos);
         setTodos(updatedTodos);
-      };
-      
+    };
+
+    const handleToggleCompleted = (id: number) => {
+      const updatedTodo = TodoService.toggleCompleted(id);
+      if (updatedTodo) {
+        setTodos((prev) =>
+          prev.map((todo) => (todo.id === id ? updatedTodo : todo))
+        );
+      }
+    };
+
+    // Se ordenan las tareas para mostrar primero las no completadas
+    const sortedTodos = [...todos].sort((a, b) => Number(a.completed) - Number(b.completed));
+    
+    
     return (
         <div className="todo-list-container">
           <h2>List of To Do tasks</h2>
@@ -46,9 +58,14 @@ const TodoList = () =>{
             <p>No pending tasks.</p>
           ) : (
             <ul className="todo-list">
-              {todos.map((todo) => (
+              {sortedTodos.map((todo) => (
                 <li key={todo.id} className="todo-item">
-                  <input type="checkbox" />
+                  <input
+                    type="checkbox"
+                    checked={todo.completed}
+                    onChange={() => handleToggleCompleted(todo.id)}
+                  />
+
                   
                   {editingTodoId === todo.id ? (
                     <div className="edit-mode">
@@ -64,17 +81,31 @@ const TodoList = () =>{
                       </div>
                     </div>
                   ) : (
-                    <div className="view-mode">
-                      <span className="todo-description">
-                        {todo.description}
-                      </span>
-                      <button 
-                        onClick={() => handleEditStart(todo.id, todo.description)}
-                        className="edit-button">Editar
-                      </button>
-                    </div>
+                      <div className="view-mode">
+                        <span
+                          className="todo-description"
+                          style={{
+                            color: todo.completed ? 'red' : 'white',
+                            textDecoration: todo.completed ? 'line-through' : 'none'
+                          }}
+                        >
+                          {todo.description}
+                        </span>
+
+                        {todo.completed && todo.date && (
+                          <div style={{ fontSize: '12px', color: '#aaa', marginTop: '4px' }}>
+                            Completado el: {new Date(todo.date).toLocaleString('es-CR')}
+                          </div>
+                        )}
+
+                        <button
+                          onClick={() => handleEditStart(todo.id, todo.description)}
+                          className="edit-button"
+                        >
+                          Editar
+                        </button>
+                      </div>
                   )}
-                 
                   <button 
                   onClick={() => handleDeleteTodo(todo.id)}
                   style={{marginLeft: '10px', color: 'red'}}
