@@ -18,8 +18,10 @@ const TodoService ={
     addTodo: (description: string): TodoTypes => {
         const todos = TodoService.getTodos();
         const newTodo: TodoTypes = { id:getNextId(),description, completed: false}
-  // Incrementar el ID para el siguiente todo
+        // Se agrega la nueva tarea al inicio de la lista de tareas
         const updateTodos = [newTodo, ...todos];
+        // Se guarda la nueva lista de tareas en localStorage
+        // Se convierte la lista de tareas a formato JSON para guardarla en localStorage
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updateTodos));
         return newTodo;
     },
@@ -27,7 +29,9 @@ const TodoService ={
     updateTodo: (todo:TodoTypes): TodoTypes => {
         const todos = TodoService.getTodos();
         const updateTodos = todos.map((t) => (t.id === todo.id ? todo : t));
+        // Se guarda la lista de tareas actualizada en localStorage
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updateTodos));
+        // Se devuelve la tarea actualizada
         return todo;
     }, 
     //eliminar todo
@@ -39,23 +43,20 @@ const TodoService ={
     
     toggleCompleted: (id: number): TodoTypes | undefined => {
         const todos = TodoService.getTodos();
-      
         const updatedTodos = todos.map(todo => {
           if (todo.id === id) {
             return {
               ...todo,
               completed: !todo.completed,
-              date: !todo.completed ? new Date().toISOString() : undefined  // Fecha solo al completar
+              // Guarda la fecha y hora al marcar como completada la tares
+              date: !todo.completed ? new Date().toISOString() : undefined  
             };
           }
           return todo;
         });
-      
         localStorage.setItem("todos", JSON.stringify(updatedTodos));
         return updatedTodos.find(todo => todo.id === id);
-    }
-      
-      
+    }  
 }; 
 
 export default TodoService;

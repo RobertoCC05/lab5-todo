@@ -2,7 +2,15 @@ import {useState} from "react";
 import TodoTypes from "../Todo";
 import TodoService from "../TodoService";
 
-const TodoList = ({ todos, setTodos }: { todos: TodoTypes[], setTodos: React.Dispatch<React.SetStateAction<TodoTypes[]>> }) =>{
+const TodoList = ({ todos, setTodos }
+  :
+  { //Explicación de los props
+    //todos Arreglo de tareas que se va a mostrar en la lista.
+    todos: TodoTypes[], 
+    //setTodos: Función para actualizar el estado de las tareas.
+    // Se utiliza para agregar, eliminar o editar tareas.
+    setTodos: React.Dispatch<React.SetStateAction<TodoTypes[]>> 
+  }) =>{
     const [editingTodoId, setEditTodoId] = useState<number | null>(null);
     const [editedTodoDescription, setEditedDescription] = useState<string>("")
 
@@ -37,11 +45,11 @@ const TodoList = ({ todos, setTodos }: { todos: TodoTypes[], setTodos: React.Dis
         setTodos(updatedTodos);
     };
 
-    const handleToggleCompleted = (id: number) => {
-      const updatedTodo = TodoService.toggleCompleted(id);
+    const handleToggleCompleted = (id: number) => {  // Cambia el estado de completado de una tarea
+      const updatedTodo = TodoService.toggleCompleted(id); 
       if (updatedTodo) {
-        setTodos((prev) =>
-          prev.map((todo) => (todo.id === id ? updatedTodo : todo))
+        setTodos((prev) => // actualiza la lista de tareas
+          prev.map((todo) => (todo.id === id ? updatedTodo : todo)) // Reemplaza la tarea editada por la actualizada
         );
       }
     };
